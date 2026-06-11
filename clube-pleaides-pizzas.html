@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clube Plêiades — Pedidos de Pizza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #e63946;
+    --primary-dark: #c1121f;
+    --primary-light: #fff0f0;
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --border: #e5e7eb;
+    --text: #111827;
+    --text-muted: #6b7280;
+    --green: #16a34a;
+    --green-light: #f0fdf4;
+    --amber: #d97706;
+    --amber-light: #fffbeb;
+    --blue: #1d4ed8;
+    --blue-light: #eff6ff;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* LOGIN */
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #c1121f 0%, #e63946 100%);
+    padding: 1rem;
+  }
+
+  .login-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    text-align: center;
+  }
+
+  .login-logo {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .login-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+
+  .login-sub {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+
+  .login-card input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-family: inherit;
+    text-align: center;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .login-card input:focus { border-color: var(--primary); }
+
+  .login-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .login-btn:hover { background: var(--primary-dark); }
+
+  .login-error {
+    color: var(--primary);
+    font-size: 0.875rem;
+    margin-top: 0.75rem;
+    display: none;
+  }
+
+  /* MAIN APP */
+  #app { display: none; }
+
+  header {
+    background: var(--primary);
+    color: white;
+    padding: 0.875rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  .header-logo { font-size: 1.5rem; }
+
+  .header-title {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .header-sub {
+    font-size: 0.7rem;
+    opacity: 0.8;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .sync-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    opacity: 0.9;
+  }
+
+  .sync-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .logout-btn {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: none;
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .logout-btn:hover { background: rgba(255,255,255,0.3); }
+
+  /* DASHBOARD */
+  .dashboard {
+    padding: 1rem 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 640px) {
+    .dashboard { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 0.875rem 1rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .stat-sub {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+  }
+
+  .stat-card.red .stat-value { color: var(--primary); }
+  .stat-card.green .stat-value { color: var(--green); }
+  .stat-card.amber .stat-value { color: var(--amber); }
+  .stat-card.blue .stat-value { color: var(--blue); }
+
+  /* CONTROLS */
+  .controls {
+    padding: 0.75rem 1.25rem;
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 180px;
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 0.625rem 0.875rem 0.625rem 2.25rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-family: inherit;
+    background: var(--surface);
+    outline: none;
+    transition: border-color 0.2s;
+    color: var(--text);
+  }
+
+  .search-box input:focus { border-color: var(--primary); }
+
+  .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .filter-btn {
+    padding: 0.625rem 0.875rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+  .add-btn {
+    padding: 0.625rem 1rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .add-btn:hover { background: var(--primary-dark); }
+
+  /* TABLE */
+  .table-container {
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    padding: 0 1.25rem;
+  }
+
+  .table-wrap {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.825rem;
+  }
+
+  th {
+    background: #f9fafb;
+    padding: 0.625rem 0.75rem;
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+    color: var(--text);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: #fafafa; }
+
+  .name-cell {
+    font-weight: 500;
+  }
+
+  .vendor-cell {
+    color: var(--text-muted);
+    font-size: 0.775rem;
+  }
+
+  .qty-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+
+  .qty-frango {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .qty-queijo {
+    background: #fce7f3;
+    color: #9d174d;
+  }
+
+  .total-cell {
+    font-weight: 600;
+    font-size: 0.825rem;
+  }
+
+  .paid-cell { color: var(--green); font-weight: 500; }
+  .unpaid-cell { color: var(--amber); font-weight: 500; }
+
+  /* CHECKBOXES */
+  .check-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    cursor: pointer;
+  }
+
+  .check-toggle input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+  }
+
+  .check-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    user-select: none;
+  }
+
+  .status-sep { display: flex; flex-direction: column; gap: 0.375rem; }
+
+  /* Delivery badge */
+  .delivery-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .delivery-yes { background: #eff6ff; color: #1e40af; }
+  .delivery-no { background: #f9fafb; color: #6b7280; }
+
+  .obs-cell {
+    max-width: 160px;
+    color: var(--text-muted);
+    font-size: 0.775rem;
+    font-style: italic;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .action-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    transition: all 0.15s;
+  }
+
+  .action-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+  .action-btn.del:hover { border-color: #dc2626; color: #dc2626; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    color: var(--text);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .form-group {
+    margin-bottom: 0.75rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.775rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--surface);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--primary); }
+
+  .form-group textarea { resize: vertical; min-height: 70px; }
+
+  .modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  .btn-cancel {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    background: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-family: inherit;
+  }
+
+  .btn-save {
+    flex: 2;
+    padding: 0.75rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+
+  .btn-save:hover { background: var(--primary-dark); }
+
+  /* EMPTY */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state .emoji { font-size: 3rem; margin-bottom: 0.75rem; }
+  .empty-state p { font-size: 0.9rem; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(4rem);
+    background: #111827;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    z-index: 999;
+    transition: transform 0.3s;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0 1.25rem 0.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">🍕</div>
+    <div class="login-title">Clube Plêiades</div>
+    <div class="login-sub">Controle de Pedidos — Sexta-feira</div>
+    <input type="password" id="login-input" placeholder="Digite o código de acesso" />
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <div class="login-error" id="login-error">Código incorreto. Tente novamente.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header>
+    <div class="header-left">
+      <span class="header-logo">🍕</span>
+      <div>
+        <div class="header-title">Clube Plêiades</div>
+        <div class="header-sub">Controle de Pedidos</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="sync-indicator">
+        <div class="sync-dot"></div>
+        <span>Ao vivo</span>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Sair</button>
+    </div>
+  </header>
+
+  <!-- DASHBOARD -->
+  <div class="dashboard">
+    <div class="stat-card red">
+      <div class="stat-label">Total de Pizzas</div>
+      <div class="stat-value" id="stat-total">—</div>
+      <div class="stat-sub" id="stat-pizza-tipos">frango + queijo</div>
+    </div>
+    <div class="stat-card amber">
+      <div class="stat-label">Faltam Retirar</div>
+      <div class="stat-value" id="stat-pending">—</div>
+      <div class="stat-sub" id="stat-pending-sub">pedidos</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Já Retirado</div>
+      <div class="stat-value" id="stat-done">—</div>
+      <div class="stat-sub">pedidos entregues</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-label">Arrecadado</div>
+      <div class="stat-value" id="stat-money">—</div>
+      <div class="stat-sub" id="stat-money-sub">de R$ —</div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="search-box">
+      <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search-input" placeholder="Buscar por nome..." oninput="renderTable()">
+    </div>
+    <button class="filter-btn" id="filter-all" onclick="setFilter('all')" style="background:var(--primary);color:white;border-color:var(--primary)">Todos</button>
+    <button class="filter-btn" id="filter-pending" onclick="setFilter('pending')">🕐 Pendentes</button>
+    <button class="filter-btn" id="filter-done" onclick="setFilter('done')">✅ Retirados</button>
+    <button class="filter-btn" id="filter-delivery" onclick="setFilter('delivery')">🚗 Entrega</button>
+    <button class="add-btn" onclick="openModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      Novo
+    </button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-container">
+    <div class="table-wrap">
+      <div id="table-loading" class="loading">
+        <div class="spinner"></div>
+        Carregando pedidos...
+      </div>
+      <div id="table-content" style="display:none;">
+        <table>
+          <thead>
+            <tr>
+              <th>Comprador</th>
+              <th>Vendedor</th>
+              <th style="text-align:center">🍗 Frango</th>
+              <th style="text-align:center">🧀 2 Queijos</th>
+              <th>Total</th>
+              <th>Pago</th>
+              <th>Entrega</th>
+              <th>Separado</th>
+              <th>Retirado</th>
+              <th>Obs</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+        <div id="empty-state" class="empty-state" style="display:none">
+          <div class="emoji">🍕</div>
+          <p>Nenhum pedido encontrado.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADD/EDIT -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Novo Pedido</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Comprador</label>
+        <input type="text" id="f-comprador" placeholder="Nome de quem comprou">
+      </div>
+      <div class="form-group">
+        <label>Vendedor</label>
+        <input type="text" id="f-vendedor" placeholder="Quem vendeu">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>🍗 Frango c/ Requeijão</label>
+        <input type="number" id="f-frango" min="0" value="0" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>🧀 2 Queijos</label>
+        <input type="number" id="f-queijo" min="0" value="0" placeholder="0">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Valor Pago (R$)</label>
+        <input type="number" id="f-pago" min="0" placeholder="0.00" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>Entrega?</label>
+        <select id="f-entrega">
+          <option value="nao">Não — retira no local</option>
+          <option value="sim">Sim — entrega em casa</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Separado?</label>
+        <select id="f-separado">
+          <option value="nao">Não</option>
+          <option value="sim">Sim ✓</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Retirado?</label>
+        <select id="f-retirado">
+          <option value="nao">Não</option>
+          <option value="sim">Sim ✓</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Observações</label>
+      <textarea id="f-obs" placeholder="Alguma observação sobre o pedido..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveOrder()">Salvar Pedido</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getDatabase, ref, onValue, set, remove, push } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+
+const ACCESS_CODE = 'pleaides2025';
+const PRICE_PER_PIZZA = 25;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCGOBN9kexpB-0GYHHTcwLZEJu3ig7Y2n4",
+  authDomain: "clube-pleaides-pizzas.firebaseapp.com",
+  databaseURL: "https://clube-pleaides-pizzas-default-rtdb.firebaseio.com",
+  projectId: "clube-pleaides-pizzas",
+  storageBucket: "clube-pleaides-pizzas.firebasestorage.app",
+  messagingSenderId: "652311582895",
+  appId: "1:652311582895:web:4ac70020b903030cfc5c5a"
+};
+
+let app, db, ordersRef;
+let allOrders = [];
+let currentFilter = 'all';
+let editingId = null;
+
+// INITIAL DATA from spreadsheet
+const initialData = [
+  {comprador:"Adriana - Bia",vendedor:"Adriana - Bia",frango:6,queijo:6,pago:300,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Ana Demartini",vendedor:"Ana Demartini",frango:5,queijo:5,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Ana Gabriela",vendedor:"Ana Gabriela",frango:12,queijo:13,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Angélica - Pedro",vendedor:"Angélica - Pedro",frango:1,queijo:2,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Bruno Poliana",vendedor:"Bruno Poliana",frango:5,queijo:5,pago:250,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Camila - Lorena",vendedor:"Camila - Lorena",frango:4,queijo:6,pago:250,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Claudemir",vendedor:"Claudemir",frango:7,queijo:3,pago:250,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Dalvino",vendedor:"Dalvino",frango:6,queijo:4,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Francisca - Samuel",vendedor:"Francisca - Samuel",frango:19,queijo:23,pago:700,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Guimy - Cristofer",vendedor:"Guimy - Cristofer",frango:15,queijo:15,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Isabela",vendedor:"Isabela",frango:3,queijo:4,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Isaias",vendedor:"Isaias",frango:5,queijo:5,pago:250,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Jeniffer - Erick",vendedor:"Jeniffer - Erick",frango:5,queijo:5,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"João Basseti",vendedor:"João Basseti",frango:1,queijo:0,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Lucas Generoso",vendedor:"Lucas Generoso",frango:15,queijo:15,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Mariza - Geovana",vendedor:"Mariza - Geovana",frango:13,queijo:10,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Rodrigo",vendedor:"Rodrigo",frango:45,queijo:52,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Samuel Monte Sião",vendedor:"Samuel Monte Sião",frango:3,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Sirlei",vendedor:"Sirlei",frango:1,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Tamires - Kauan",vendedor:"Tamires - Kauan",frango:2,queijo:3,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Alisson",vendedor:"Leo",frango:1,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Amanda Fernando",vendedor:"Leo",frango:2,queijo:0,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Amiga Edineia",vendedor:"Leo",frango:0,queijo:1,pago:0,entrega:"sim",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Angela",vendedor:"Leo",frango:1,queijo:1,pago:55,entrega:"sim",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Angelica Ryan",vendedor:"Leo",frango:3,queijo:1,pago:100,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Aninha Oliveira",vendedor:"Leo",frango:1,queijo:0,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Celia Corsi",vendedor:"Leo",frango:1,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Clotilde",vendedor:"Leo",frango:0,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Cris Orlando Maia",vendedor:"Leo",frango:2,queijo:2,pago:100,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Danielzinho",vendedor:"Leo",frango:1,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Davi",vendedor:"Leo",frango:1,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Delva",vendedor:"Leo",frango:1,queijo:1,pago:50,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Dirce",vendedor:"Leo",frango:0,queijo:2,pago:50,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Douglas",vendedor:"Leo",frango:1,queijo:1,pago:50,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Edineia",vendedor:"Leo",frango:1,queijo:1,pago:0,entrega:"sim",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Elenice",vendedor:"Leo",frango:1,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Eliane Kruguer",vendedor:"Leo",frango:0,queijo:2,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Erika Daniel",vendedor:"Leo",frango:1,queijo:2,pago:75,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Fabiana",vendedor:"Leo",frango:0,queijo:1,pago:25,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Fátima",vendedor:"Leo",frango:4,queijo:4,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Gledson Volei",vendedor:"Leo",frango:1,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Helena Ataíde",vendedor:"Leo",frango:0,queijo:2,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:"Pagar e retirar 4 pizzas?? (2 Leo 2 Lucas???)"},
+  {comprador:"Helena Maia",vendedor:"Leo",frango:0,queijo:2,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Ivanlide",vendedor:"Leo",frango:1,queijo:1,pago:55,entrega:"sim",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Jacira Ronaldo",vendedor:"Leo",frango:0,queijo:2,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Jandira Dias",vendedor:"Leo",frango:1,queijo:0,pago:30,entrega:"sim",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Jessica Vinicius",vendedor:"Leo",frango:1,queijo:0,pago:25,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Juan (Fernando)",vendedor:"Leo",frango:1,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Junior amigo Lucas Volei",vendedor:"Leo",frango:0,queijo:2,pago:50,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Karen (São Luiz)",vendedor:"Leo",frango:1,queijo:0,pago:25,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Ketyli",vendedor:"Leo",frango:0,queijo:2,pago:50,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Laiz Bassi",vendedor:"Leo",frango:0,queijo:1,pago:30,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Lenira",vendedor:"Leo",frango:1,queijo:1,pago:50,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Leticia Plens",vendedor:"Leo",frango:0,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Luana",vendedor:"Leo",frango:0,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Lucélelia Davi",vendedor:"Leo",frango:1,queijo:1,pago:55,entrega:"sim",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Madalena",vendedor:"Leo",frango:1,queijo:1,pago:50,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Margarete",vendedor:"Leo",frango:1,queijo:1,pago:50,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Marilza - Márcia",vendedor:"Leo",frango:0,queijo:2,pago:50,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Marina",vendedor:"Leo",frango:0,queijo:1,pago:25,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Marivania",vendedor:"Leo",frango:1,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Miguel Maia",vendedor:"Leo",frango:1,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Nilceia",vendedor:"Leo",frango:1,queijo:0,pago:25,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Paula Zé",vendedor:"Leo",frango:2,queijo:4,pago:150,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Rebeca",vendedor:"Leo",frango:1,queijo:1,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Sandra M.",vendedor:"Leo",frango:0,queijo:1,pago:25,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Suely",vendedor:"Leo",frango:0,queijo:1,pago:0,entrega:"sim",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Tiago",vendedor:"Leo",frango:1,queijo:0,pago:25,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Tito/Luciene",vendedor:"Leo",frango:2,queijo:0,pago:50,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Vanessa M.",vendedor:"Leo",frango:1,queijo:0,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Veronica (Lonca)",vendedor:"Leo",frango:1,queijo:0,pago:25,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Vinicius",vendedor:"Leo",frango:2,queijo:4,pago:125,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+  {comprador:"Zaqueu",vendedor:"Leo",frango:1,queijo:0,pago:0,entrega:"nao",separado:"nao",retirado:"nao",obs:""},
+];
+
+window.doLogin = function() {
+  const val = document.getElementById('login-input').value.trim();
+  if (val === ACCESS_CODE) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initFirebase();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('login-input').value = '';
+  }
+};
+
+document.getElementById('login-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') window.doLogin();
+});
+
+window.doLogout = function() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-input').value = '';
+};
+
+function initFirebase() {
+  try {
+    app = initializeApp(firebaseConfig);
+    db = getDatabase(app);
+    ordersRef = ref(db, 'pedidos');
+
+    onValue(ordersRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) {
+        // First time: seed with initial data
+        seedInitialData();
+      } else {
+        allOrders = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+        document.getElementById('table-loading').style.display = 'none';
+        document.getElementById('table-content').style.display = 'block';
+        updateDashboard();
+        renderTable();
+      }
+    }, (error) => {
+      console.error('Firebase error:', error);
+      // Fallback to local mode
+      useFallbackMode();
+    });
+  } catch(e) {
+    console.error('Firebase init error:', e);
+    useFallbackMode();
+  }
+}
+
+function useFallbackMode() {
+  // Use localStorage as fallback when Firebase isn't configured
+  const stored = localStorage.getItem('pleaides_pedidos');
+  if (stored) {
+    allOrders = JSON.parse(stored);
+  } else {
+    allOrders = initialData.map((d, i) => ({ id: 'local_' + i, ...d }));
+    localStorage.setItem('pleaides_pedidos', JSON.stringify(allOrders));
+  }
+  document.getElementById('table-loading').style.display = 'none';
+  document.getElementById('table-content').style.display = 'block';
+  document.querySelector('.sync-dot').style.background = '#f59e0b';
+  updateDashboard();
+  renderTable();
+  showToast('⚠️ Modo local — configure o Firebase para sincronização em tempo real');
+}
+
+function saveLocal() {
+  localStorage.setItem('pleaides_pedidos', JSON.stringify(allOrders));
+}
+
+async function seedInitialData() {
+  for (const item of initialData) {
+    const newRef = push(ordersRef);
+    await set(newRef, item);
+  }
+}
+
+window.setFilter = function(f) {
+  currentFilter = f;
+  ['all','pending','done','delivery'].forEach(id => {
+    const btn = document.getElementById('filter-' + id);
+    btn.classList.remove('active');
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  });
+  const active = document.getElementById('filter-' + f);
+  active.style.background = 'var(--primary)';
+  active.style.color = 'white';
+  active.style.borderColor = 'var(--primary)';
+  renderTable();
+};
+
+function updateDashboard() {
+  const totalFrango = allOrders.reduce((s, o) => s + (o.frango || 0), 0);
+  const totalQueijo = allOrders.reduce((s, o) => s + (o.queijo || 0), 0);
+  const totalPizzas = totalFrango + totalQueijo;
+  const totalRetirado = allOrders.filter(o => o.retirado === 'sim').length;
+  const pendentes = allOrders.filter(o => o.retirado !== 'sim').length;
+  const totalPago = allOrders.reduce((s, o) => s + (parseFloat(o.pago) || 0), 0);
+  const totalDever = totalPizzas * PRICE_PER_PIZZA;
+
+  document.getElementById('stat-total').textContent = totalPizzas;
+  document.getElementById('stat-pizza-tipos').textContent = `${totalFrango} frango · ${totalQueijo} queijo`;
+  document.getElementById('stat-pending').textContent = pendentes;
+  document.getElementById('stat-pending-sub').textContent = `de ${allOrders.length} pedidos`;
+  document.getElementById('stat-done').textContent = totalRetirado;
+  document.getElementById('stat-money').textContent = `R$${totalPago.toLocaleString('pt-BR')}`;
+  document.getElementById('stat-money-sub').textContent = `de R$${totalDever.toLocaleString('pt-BR')}`;
+}
+
+function renderTable() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  let filtered = allOrders.filter(o => {
+    const matchSearch = !search || 
+      (o.comprador || '').toLowerCase().includes(search) ||
+      (o.vendedor || '').toLowerCase().includes(search);
+    if (!matchSearch) return false;
+    if (currentFilter === 'pending') return o.retirado !== 'sim';
+    if (currentFilter === 'done') return o.retirado === 'sim';
+    if (currentFilter === 'delivery') return o.entrega === 'sim';
+    return true;
+  });
+
+  const tbody = document.getElementById('table-body');
+  const empty = document.getElementById('empty-state');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  const total = (o) => ((o.frango||0) + (o.queijo||0)) * PRICE_PER_PIZZA;
+  const pago = (o) => parseFloat(o.pago) || 0;
+  const falta = (o) => Math.max(0, total(o) - pago(o));
+
+  tbody.innerHTML = filtered.map(o => {
+    const t = total(o);
+    const p = pago(o);
+    const f = falta(o);
+    const pagoClass = f <= 0 ? 'paid-cell' : 'unpaid-cell';
+    const pagoText = f <= 0 
+      ? `<span class="paid-cell">✓ Pago</span>` 
+      : `<span class="unpaid-cell">Falta R$${f}</span>`;
+
+    return `<tr>
+      <td class="name-cell">${esc(o.comprador)}</td>
+      <td class="vendor-cell">${esc(o.vendedor)}</td>
+      <td style="text-align:center"><span class="qty-badge qty-frango">${o.frango||0}</span></td>
+      <td style="text-align:center"><span class="qty-badge qty-queijo">${o.queijo||0}</span></td>
+      <td class="total-cell">R$${t}</td>
+      <td>${pagoText}</td>
+      <td>${o.entrega === 'sim' ? '<span class="delivery-badge delivery-yes">🚗 Entrega</span>' : '<span class="delivery-badge delivery-no">Retira</span>'}</td>
+      <td>
+        <label class="check-toggle" title="Marcar como separado">
+          <input type="checkbox" ${o.separado === 'sim' ? 'checked' : ''} onchange="toggleField('${o.id}','separado',this.checked)">
+          <span class="check-label" style="color:${o.separado==='sim'?'var(--green)':'var(--text-muted)'}">${o.separado==='sim'?'Sim':'Não'}</span>
+        </label>
+      </td>
+      <td>
+        <label class="check-toggle" title="Marcar como retirado">
+          <input type="checkbox" ${o.retirado === 'sim' ? 'checked' : ''} onchange="toggleField('${o.id}','retirado',this.checked)">
+          <span class="check-label" style="color:${o.retirado==='sim'?'var(--green)':'var(--text-muted)'}">${o.retirado==='sim'?'Sim':'Não'}</span>
+        </label>
+      </td>
+      <td class="obs-cell" title="${esc(o.obs)}">${esc(o.obs) || '—'}</td>
+      <td style="white-space:nowrap;display:flex;gap:4px">
+        <button class="action-btn" onclick="openModal('${o.id}')" title="Editar">✏️</button>
+        <button class="action-btn del" onclick="deleteOrder('${o.id}')" title="Excluir">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+window.toggleField = async function(id, field, checked) {
+  const val = checked ? 'sim' : 'nao';
+  const order = allOrders.find(o => o.id === id);
+  if (!order) return;
+  order[field] = val;
+
+  if (db && ordersRef) {
+    await set(ref(db, `pedidos/${id}/${field}`), val);
+  } else {
+    saveLocal();
+  }
+
+  updateDashboard();
+  renderTable();
+  showToast(checked ? '✅ Marcado!' : '↩️ Desmarcado');
+};
+
+window.deleteOrder = async function(id) {
+  if (!confirm('Tem certeza que deseja excluir este pedido?')) return;
+  if (db) {
+    await remove(ref(db, `pedidos/${id}`));
+  } else {
+    allOrders = allOrders.filter(o => o.id !== id);
+    saveLocal();
+    updateDashboard();
+    renderTable();
+  }
+  showToast('🗑️ Pedido excluído');
+};
+
+window.openModal = function(id) {
+  editingId = id || null;
+  document.getElementById('modal-title').textContent = id ? 'Editar Pedido' : 'Novo Pedido';
+
+  if (id) {
+    const o = allOrders.find(x => x.id === id);
+    if (o) {
+      document.getElementById('f-comprador').value = o.comprador || '';
+      document.getElementById('f-vendedor').value = o.vendedor || '';
+      document.getElementById('f-frango').value = o.frango || 0;
+      document.getElementById('f-queijo').value = o.queijo || 0;
+      document.getElementById('f-pago').value = o.pago || '';
+      document.getElementById('f-entrega').value = o.entrega || 'nao';
+      document.getElementById('f-separado').value = o.separado || 'nao';
+      document.getElementById('f-retirado').value = o.retirado || 'nao';
+      document.getElementById('f-obs').value = o.obs || '';
+    }
+  } else {
+    document.getElementById('f-comprador').value = '';
+    document.getElementById('f-vendedor').value = '';
+    document.getElementById('f-frango').value = 0;
+    document.getElementById('f-queijo').value = 0;
+    document.getElementById('f-pago').value = '';
+    document.getElementById('f-entrega').value = 'nao';
+    document.getElementById('f-separado').value = 'nao';
+    document.getElementById('f-retirado').value = 'nao';
+    document.getElementById('f-obs').value = '';
+  }
+
+  document.getElementById('modal').classList.add('open');
+};
+
+window.closeModal = function() {
+  document.getElementById('modal').classList.remove('open');
+  editingId = null;
+};
+
+window.saveOrder = async function() {
+  const data = {
+    comprador: document.getElementById('f-comprador').value.trim(),
+    vendedor: document.getElementById('f-vendedor').value.trim(),
+    frango: parseInt(document.getElementById('f-frango').value) || 0,
+    queijo: parseInt(document.getElementById('f-queijo').value) || 0,
+    pago: parseFloat(document.getElementById('f-pago').value) || 0,
+    entrega: document.getElementById('f-entrega').value,
+    separado: document.getElementById('f-separado').value,
+    retirado: document.getElementById('f-retirado').value,
+    obs: document.getElementById('f-obs').value.trim(),
+  };
+
+  if (!data.comprador) { alert('Informe o nome do comprador.'); return; }
+
+  if (db && ordersRef) {
+    if (editingId) {
+      await set(ref(db, `pedidos/${editingId}`), data);
+    } else {
+      const newRef = push(ordersRef);
+      await set(newRef, data);
+    }
+  } else {
+    if (editingId) {
+      const idx = allOrders.findIndex(o => o.id === editingId);
+      if (idx !== -1) allOrders[idx] = { id: editingId, ...data };
+    } else {
+      allOrders.push({ id: 'local_' + Date.now(), ...data });
+    }
+    saveLocal();
+    updateDashboard();
+    renderTable();
+  }
+
+  closeModal();
+  showToast(editingId ? '✏️ Pedido atualizado!' : '✅ Pedido adicionado!');
+};
+
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
